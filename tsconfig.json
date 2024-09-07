@@ -16,6 +16,23 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@common/*": [
+        "./src/common/*"
+      ],
+      "@controller/*": [
+        "./src/controller/*"
+      ],
+      "@entities/*": [
+        "./src/common/typeorm/entities/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+    },
   }
 }
