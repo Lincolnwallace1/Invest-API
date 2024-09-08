@@ -13,7 +13,7 @@ import {
   CreateInvestmentService,
   GetInvestmentService,
   ListInvestmentService,
-  WithdrawnInvestmentService,
+  WithdrawInvestmentService,
   PaymentInvestmentService,
 } from './useCases';
 
@@ -24,7 +24,7 @@ import {
     CreateInvestmentService,
     GetInvestmentService,
     ListInvestmentService,
-    WithdrawnInvestmentService,
+    WithdrawInvestmentService,
     PaymentInvestmentService,
   ],
   controllers: [InvestmentController],

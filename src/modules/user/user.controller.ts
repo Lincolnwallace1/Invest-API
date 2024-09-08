@@ -9,6 +9,7 @@ import {
   HttpCode,
   Delete,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import {
@@ -18,6 +19,8 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 import { instanceToInstance } from 'class-transformer';
 
@@ -45,6 +48,7 @@ import {
 @ApiTags('Users')
 @ApiBearerAuth('Bearer')
 @Controller('users')
+@UseInterceptors(CacheInterceptor)
 class UserController {
   constructor(
     private readonly createUserService: CreateUserService,
@@ -75,6 +79,10 @@ class UserController {
     description: 'User already exists',
     status: HttpStatus.CONFLICT,
   })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
+  })
   @Post('/')
   public async create(@Body() data: ICreateUser): Promise<ICreateUserResponse> {
     const dataParsed = await CreateUserSchema.parseAsync(data).catch(
@@ -104,6 +112,10 @@ class UserController {
   @ApiResponse({
     description: 'Unauthorized',
     status: HttpStatus.UNAUTHORIZED,
+  })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
   })
   @Get('/:user')
   public async get(@Param('user') user: string): Promise<IGetUserResponse> {
@@ -136,6 +148,10 @@ class UserController {
     description: 'Unauthorized',
     status: HttpStatus.UNAUTHORIZED,
   })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
+  })
   @Patch('/:user')
   public async update(
     @Param('user') user: string,
@@ -167,6 +183,10 @@ class UserController {
   @ApiResponse({
     description: 'Unauthorized',
     status: HttpStatus.UNAUTHORIZED,
+  })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
   })
   @Delete('/:user')
   public async delete(@Param('user') user: string): Promise<void> {

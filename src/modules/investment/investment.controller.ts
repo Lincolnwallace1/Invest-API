@@ -9,6 +9,7 @@ import {
   Patch,
   HttpCode,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import {
@@ -20,6 +21,9 @@ import {
 } from '@nestjs/swagger';
 
 import { Cron } from '@nestjs/schedule';
+
+import { CacheInterceptor } from '@nestjs/cache-manager';
+
 import { instanceToInstance } from 'class-transformer';
 
 import ValidationError from '@common/erros/ZodError';
@@ -47,7 +51,7 @@ import {
 import {
   CreateInvestmentService,
   GetInvestmentService,
-  WithdrawnInvestmentService,
+  WithdrawInvestmentService,
   ListInvestmentService,
   PaymentInvestmentService,
 } from './useCases';
@@ -55,12 +59,13 @@ import {
 @ApiTags('Investments')
 @ApiBearerAuth('Bearer')
 @Controller('investments')
+@UseInterceptors(CacheInterceptor)
 class InvestmentController {
   constructor(
     private readonly createInvestmentService: CreateInvestmentService,
     private readonly getInvestmentService: GetInvestmentService,
     private readonly listInvestmentService: ListInvestmentService,
-    private readonly withdrawnInvestmentService: WithdrawnInvestmentService,
+    private readonly withdrawnInvestmentService: WithdrawInvestmentService,
     private readonly paymentInvestmentService: PaymentInvestmentService,
   ) {}
 
@@ -82,6 +87,10 @@ class InvestmentController {
   @ApiResponse({
     description: 'Unauthorized',
     status: HttpStatus.UNAUTHORIZED,
+  })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
   })
   @Post('/')
   public async createInvestment(
@@ -120,6 +129,10 @@ class InvestmentController {
     description: 'Investment Not Found',
     status: HttpStatus.NOT_FOUND,
   })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
+  })
   @Get('/:investment')
   public async getInvestment(
     @Param('investment') investment: string,
@@ -142,6 +155,10 @@ class InvestmentController {
   @ApiResponse({
     description: 'Unauthorized',
     status: HttpStatus.UNAUTHORIZED,
+  })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
   })
   @Post('/list')
   public async listInvestment(
@@ -182,6 +199,10 @@ class InvestmentController {
     description: 'Investment Not Found',
     status: HttpStatus.NOT_FOUND,
   })
+  @ApiResponse({
+    description: 'ThrottlerException: Too Many Requests',
+    status: HttpStatus.TOO_MANY_REQUESTS,
+  })
   @Patch('/:investment/withdraw')
   public async withdrawnInvestment(
     @Param('investment') investment: string,
@@ -201,7 +222,7 @@ class InvestmentController {
     return instanceToInstance(investmentRecord);
   }
 
-  @Cron('0 0 */1 * * *')
+  @Cron('1 0 * * *')
   handleCron() {
     this.paymentInvestmentService.execute();
   }
