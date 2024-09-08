@@ -4,9 +4,12 @@ import {
   CreateDateColumn,
   Column,
   Entity,
+  OneToMany,
 } from 'typeorm';
 
 import { Exclude } from 'class-transformer';
+
+import Investment from './Investment';
 
 @Entity('user')
 class User {
@@ -39,6 +42,9 @@ class User {
   @Exclude()
   @UpdateDateColumn({ type: 'timestamp', name: 'updatedAt' })
   updatedAt: Date;
+
+  @OneToMany(() => Investment, (investment) => investment.user_)
+  investments: Investment[];
 }
 
 export default User;
