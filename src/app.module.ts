@@ -6,15 +6,15 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { TypeormModule } from './common/typeorm/typeorm.module';
 
+import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { InvestmentModule } from './modules/investment/investment.module';
-import { AuthModule } from './modules/auth/auth.module';
 import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     CacheModule.register({
       max: 100,
       ttl: 120,
