@@ -9,6 +9,7 @@ import {
   HttpCode,
   Delete,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import {
@@ -18,6 +19,8 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 import { instanceToInstance } from 'class-transformer';
 
@@ -45,6 +48,7 @@ import {
 @ApiTags('Users')
 @ApiBearerAuth('Bearer')
 @Controller('users')
+@UseInterceptors(CacheInterceptor)
 class UserController {
   constructor(
     private readonly createUserService: CreateUserService,

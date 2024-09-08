@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
 
 import { TypeormModule } from './common/typeorm/typeorm.module';
 
@@ -13,6 +14,11 @@ import { HistoryModule } from './modules/history/history.module';
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
+    CacheModule.register({
+      max: 100,
+      ttl: 120,
+      isGlobal: true,
+    }),
     TypeormModule,
     AuthModule,
     UserModule,
