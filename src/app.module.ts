@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { TypeormModule } from './common/typeorm/typeorm.module';
 
@@ -10,6 +11,7 @@ import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeormModule,
     AuthModule,

@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
+import { Cron } from '@nestjs/schedule';
 import { instanceToInstance } from 'class-transformer';
 
 import ValidationError from '@common/erros/ZodError';
@@ -48,6 +49,7 @@ import {
   GetInvestmentService,
   WithdrawnInvestmentService,
   ListInvestmentService,
+  PaymentInvestmentService,
 } from './useCases';
 
 @ApiTags('Investments')
@@ -59,6 +61,7 @@ class InvestmentController {
     private readonly getInvestmentService: GetInvestmentService,
     private readonly listInvestmentService: ListInvestmentService,
     private readonly withdrawnInvestmentService: WithdrawnInvestmentService,
+    private readonly paymentInvestmentService: PaymentInvestmentService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -196,6 +199,11 @@ class InvestmentController {
     });
 
     return instanceToInstance(investmentRecord);
+  }
+
+  @Cron('0 0 */1 * * *')
+  handleCron() {
+    this.paymentInvestmentService.execute();
   }
 }
 
