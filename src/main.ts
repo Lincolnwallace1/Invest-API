@@ -1,19 +1,34 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import * as fs from 'fs';
+
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 import ExceptionMiddleware from './common/middlewares/ExceptionMiddleware';
+
+import { AppModule } from './app.module';
 
 class App {
   private port = Number(process.env.API_PORT) || 8080;
+
+  private httpsOptions = {
+    key: fs.readFileSync('./secrets/cert.key'),
+    cert: fs.readFileSync('./secrets/cert.crt'),
+  };
 
   constructor() {
     this.init();
   }
 
   private async init() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      httpsOptions: this.httpsOptions,
+    });
 
     app.useGlobalFilters(new ExceptionMiddleware());
+
+    app.enableCors({
+      origin: true,
+    });
 
     const config = new DocumentBuilder()
       .setTitle('Invest - API')
