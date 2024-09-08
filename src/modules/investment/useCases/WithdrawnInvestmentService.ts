@@ -1,35 +1,38 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Inject, HttpStatus } from '@nestjs/common';
 import Z from 'zod';
 import AppError from '@common/erros/AppError';
 
 import UtilsDate from '@/utils/UtilsDate';
 
-import InvestmentRepository from '@model/investment/repositorie/InvestmentRepositorie';
-import HistoryRepository from '@model/history/repositorie/HistoryRepositorie';
+import InvestmentRepository from '@modules/investment/repository/InvestmentRepository';
+import HistoryRepository from '@modules/history/repository/HistoryRepository';
 
-import { UpdateInvestmentSchema } from '@views/investment/schemas';
+import { WithdrawInvestmentSchema } from '@modules/investment/schemas';
 
-import { IWithdrawnInvestmentResponse } from '@views/investment/responses';
+import { IWithdrawnInvestmentResponse } from '@modules/investment/responses';
 
 interface IRequest {
-  id: number;
-  data: Z.infer<typeof UpdateInvestmentSchema>;
+  investment: number;
+  data: Z.infer<typeof WithdrawInvestmentSchema>;
 }
 
-@Injectable()
 class WithdrawnInvestmentService {
   constructor(
-    private readonly investmentRepository: InvestmentRepository,
-    private readonly historyRepository: HistoryRepository,
+    @Inject(InvestmentRepository)
+    private investmentRepository: InvestmentRepository,
+    @Inject(HistoryRepository)
+    private historyRepository: HistoryRepository,
   ) {}
 
   public async execute({
-    id,
+    investment,
     data,
   }: IRequest): Promise<IWithdrawnInvestmentResponse> {
-    const investment = await this.investmentRepository.get({ id });
+    const investmentRecord = await this.investmentRepository.get({
+      id: investment,
+    });
 
-    if (!investment) {
+    if (!investmentRecord) {
       throw new AppError({
         name: 'Investment Not Found',
         errorCode: 'investment_not_found',
@@ -37,7 +40,7 @@ class WithdrawnInvestmentService {
       });
     }
 
-    if (data.value > investment.expectedValue) {
+    if (data.value > investmentRecord.expectedValue) {
       throw new AppError({
         name: 'Value is not valid',
         errorCode: 'value_not_valid',
@@ -46,13 +49,13 @@ class WithdrawnInvestmentService {
     }
 
     const time = new UtilsDate().diferenceMonth(
-      new Date(investment.initialDate),
+      new Date(investmentRecord.initialDate),
       new Date(),
     );
 
     const tax = this.applyTax(data.value, time);
 
-    if (data.value > investment.expectedValue) {
+    if (data.value > investmentRecord.expectedValue) {
       throw new AppError({
         name: 'Not enough money',
         errorCode: 'not_enough_money',
@@ -61,17 +64,19 @@ class WithdrawnInvestmentService {
     }
 
     const history = await this.historyRepository.create({
-      investment: investment.id,
+      investment: investmentRecord.id,
       date: new Date(),
       valueWithdrawn: data.value,
       realValueWithdrawn: data.value - tax,
       tax,
     });
 
-    await this.investmentRepository.update(investment.id, {
-      expectedValue: investment.expectedValue - data.value,
+    await this.investmentRepository.update(investmentRecord.id, {
+      expectedValue: investmentRecord.expectedValue - data.value,
       status:
-        investment.expectedValue - data.value === 0 ? 'finished' : 'active',
+        investmentRecord.expectedValue - data.value === 0
+          ? 'finished'
+          : 'active',
     });
 
     return {
@@ -81,7 +86,9 @@ class WithdrawnInvestmentService {
       realValueWithdrawn: history.realValueWithdrawn,
       tax: history.tax,
       status:
-        investment.expectedValue - data.value === 0 ? 'finished' : 'active',
+        investmentRecord.expectedValue - data.value === 0
+          ? 'finished'
+          : 'active',
     };
   }
 

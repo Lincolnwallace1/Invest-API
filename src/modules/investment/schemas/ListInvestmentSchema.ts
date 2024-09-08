@@ -1,14 +1,8 @@
 import Z from 'zod';
 
 const ListInvesmentSchema = Z.object({
-  offset: Z.string()
-    .optional()
-    .default('0')
-    .transform((val) => Number(val)),
-  limit: Z.string()
-    .optional()
-    .default('50')
-    .transform((val) => Number(val)),
+  offset: Z.number().optional().default(0),
+  limit: Z.number().optional().default(50),
   status: Z.string().optional(),
 });
 

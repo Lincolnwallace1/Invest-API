@@ -1,25 +1,29 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Inject, HttpStatus } from '@nestjs/common';
 import AppError from '@common/erros/AppError';
 
-import InvestmentRepository from '@model/investment/repositorie/InvestmentRepositorie';
+import InvestmentRepository from '@modules/investment/repository/InvestmentRepository';
 
-import { IGetInvestmentResponse } from '@views/investment/responses';
+import { IGetInvestmentResponse } from '@modules/investment/responses';
 
 interface IRequest {
-  id: number;
+  investment: number;
 }
 
-@Injectable()
 class GetInvestmentService {
-  constructor(private readonly investmentRepository: InvestmentRepository) {}
+  constructor(
+    @Inject(InvestmentRepository)
+    private investmentRepository: InvestmentRepository,
+  ) {}
 
-  public async execute({ id }: IRequest): Promise<IGetInvestmentResponse> {
-    const investment = await this.investmentRepository.get({ id }, [
-      'user_',
-      'history',
-    ]);
+  public async execute({
+    investment,
+  }: IRequest): Promise<IGetInvestmentResponse> {
+    const investmentRecord = await this.investmentRepository.get(
+      { id: investment },
+      ['history'],
+    );
 
-    if (!investment) {
+    if (!investmentRecord) {
       throw new AppError({
         name: 'Investment Not Found',
         errorCode: 'investment_not_found',
@@ -28,20 +32,15 @@ class GetInvestmentService {
     }
 
     const investmentResponse: IGetInvestmentResponse = {
-      user: {
-        id: investment.user_.id,
-        fullname: investment.user_.fullname,
-        email: investment.user_.email,
-      },
       investment: {
-        id: investment.id,
-        name: investment.name,
-        initialDate: investment.initialDate,
-        initialValue: Number(investment.initialValue),
-        expectedValue: Number(investment.expectedValue),
-        status: investment.status,
-        history: investment.history
-          ? investment.history.map((history) => ({
+        id: investmentRecord.id,
+        name: investmentRecord.name,
+        initialDate: investmentRecord.initialDate,
+        initialValue: Number(investmentRecord.initialValue),
+        expectedValue: Number(investmentRecord.expectedValue),
+        status: investmentRecord.status,
+        history: investmentRecord.history
+          ? investmentRecord.history.map((history) => ({
               date: history.date,
               valueWithdrawn: Number(history.valueWithdrawn),
               realValueWithdrawn: Number(history.realValueWithdrawn),

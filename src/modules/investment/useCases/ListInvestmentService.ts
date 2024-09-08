@@ -1,28 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import Z from 'zod';
 
-import InvestmentRepository from '@model/investment/repositorie/InvestmentRepositorie';
+import InvestmentRepository from '@modules/investment/repository/InvestmentRepository';
 
-import { IListInvestmentResponse } from '@views/investment/responses';
+import { IListInvestmentResponse } from '@modules/investment/responses';
 
-import { ListInvestmentSchema } from '@views/investment/schemas';
+import { ListInvestmentSchema } from '@modules/investment/schemas';
 
 interface IRequest {
+  user: number;
   data: Z.infer<typeof ListInvestmentSchema>;
 }
 
-@Injectable()
 class ListInvestmentService {
-  constructor(private readonly investmentRepository: InvestmentRepository) {}
+  constructor(
+    @Inject(InvestmentRepository)
+    private investmentRepository: InvestmentRepository,
+  ) {}
 
-  public async execute({ data }: IRequest): Promise<IListInvestmentResponse> {
+  public async execute({
+    data,
+    user,
+  }: IRequest): Promise<IListInvestmentResponse> {
     const [investments, count] = await this.investmentRepository
-      .list(
-        { user: data.user, status: data.status },
-        ['user_', 'history'],
-        data.limit,
-        data.offset,
-      )
+      .list({ user, status: data.status }, ['history'], data.limit, data.offset)
       .catch((error) => {
         throw new Error(error);
       });
