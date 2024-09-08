@@ -25,6 +25,8 @@ import ValidationError from '@common/erros/ZodError';
 
 import AuthGuard from '@common/middlewares/AuthMiddleware/auth.guard';
 
+import InvestmentGuard from './permissions/investment.guard';
+
 import {
   CreateInvestmentSchema,
   WithdrawInvestmentSchema,
@@ -99,7 +101,7 @@ class InvestmentController {
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, InvestmentGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a investment' })
   @ApiResponse({
@@ -157,7 +159,7 @@ class InvestmentController {
     return instanceToInstance(investments);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, InvestmentGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Withdraw investment' })
   @ApiResponse({
