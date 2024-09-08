@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import InvestmentRepository from '@model/investment/repositorie/InvestmentRepositorie';
+import { Inject } from '@nestjs/common';
 
-@Injectable()
+import InvestmentRepository from '@modules/investment/repository/InvestmentRepository';
+
 class PaymentInvestmentService {
-  constructor(private readonly investmentRepository: InvestmentRepository) {}
+  constructor(
+    @Inject(InvestmentRepository)
+    private investmentRepository: InvestmentRepository,
+  ) {}
 
   public async execute(): Promise<void> {
     const investments = await this.investmentRepository.paymentList();

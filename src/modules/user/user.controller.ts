@@ -11,11 +11,20 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 import { instanceToInstance } from 'class-transformer';
 
 import ValidationError from '@common/erros/ZodError';
+
+import AuthGuard from '@common/middlewares/AuthMiddleware/auth.guard';
+import UserGuard from './permissions/user.guard';
 
 import { CreateUserSchema, UpdateUserSchema } from './schemas';
 
@@ -34,6 +43,7 @@ import {
 } from './useCases';
 
 @ApiTags('Users')
+@ApiBearerAuth('Bearer')
 @Controller('users')
 class UserController {
   constructor(
@@ -80,6 +90,7 @@ class UserController {
     };
   }
 
+  @UseGuards(AuthGuard, UserGuard)
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({
     description: 'User Found',
@@ -95,12 +106,15 @@ class UserController {
     status: HttpStatus.UNAUTHORIZED,
   })
   @Get('/:user')
-  public async get(@Param('user') id: string): Promise<IGetUserResponse> {
-    const user = await this.getUserService.execute({ id: Number(id) });
+  public async get(@Param('user') user: string): Promise<IGetUserResponse> {
+    const userRecord = await this.getUserService.execute({
+      user: Number(user),
+    });
 
-    return instanceToInstance(user);
+    return instanceToInstance(userRecord);
   }
 
+  @UseGuards(AuthGuard, UserGuard)
   @ApiOperation({ summary: 'Update user by id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBody({
@@ -124,7 +138,7 @@ class UserController {
   })
   @Patch('/:user')
   public async update(
-    @Param('user') id: string,
+    @Param('user') user: string,
     @Body() data: IUpdateUser,
   ): Promise<void> {
     const dataParsed = await UpdateUserSchema.parseAsync(data).catch(
@@ -134,11 +148,12 @@ class UserController {
     );
 
     await this.updateUserService.execute({
-      user: Number(id),
+      user: Number(user),
       data: dataParsed,
     });
   }
 
+  @UseGuards(AuthGuard, UserGuard)
   @ApiOperation({ summary: 'Delete user by id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiResponse({
@@ -154,8 +169,8 @@ class UserController {
     status: HttpStatus.UNAUTHORIZED,
   })
   @Delete('/:user')
-  public async delete(@Param('user') id: string): Promise<void> {
-    await this.deleteUserService.execute({ user: Number(id) });
+  public async delete(@Param('user') user: string): Promise<void> {
+    await this.deleteUserService.execute({ user: Number(user) });
   }
 }
 

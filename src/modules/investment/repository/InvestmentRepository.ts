@@ -54,7 +54,7 @@ class InvestmentRepository {
     const investments = await this.investmentRepository
       .createQueryBuilder('investment')
       .where(
-        "DATE_PART('day', investment.initialDate) = DATE_PART('day', CURRENT_TIMESTAMP)",
+        "DATE_PART('day', investment.initialDate) = DATE_PART('day', CURRENT_TIMESTAMP) AND investment.status = 'active'",
         { date: new Date() },
       )
       .getMany();
