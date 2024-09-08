@@ -45,8 +45,8 @@ Certifique-se de que você possui uma imagem do banco de dados **PostgreSQL** co
 Para garantir que a aplicação funcione sobre HTTPS, será necessário gerar os certificados SSL. Utilize os seguintes comandos para gerar o certificado e a chave:
 
 ```bash
-mkcert create-ca
-mkcert create-cert
+yarn mkcert create-ca
+yarn mkcert create-cert
 ```
 
 Esses comandos gerarão um certificado autoassinado para rodar a aplicação em ambiente de desenvolvimento com HTTPS, em seguida crie uma pasta chamada secrets e mova os arquivos gerados para ela.
