@@ -97,7 +97,7 @@ Esse comando aplicará todas as migrations necessárias ao banco de dados, crian
 Após configurar o banco de dados e rodar as migrations, você pode iniciar o projeto executando o seguinte comando:
 
 ```bash
-yarn migrate
+yarn start
 ```
 
 Isso irá iniciar a aplicação e disponibilizar a API para uso. A aplicação estará pronta para receber requisições, e você poderá começar a interagir com os endpoints disponíveis. Depois acessar a "localhost:8080/docs" e terá acesso a API.
