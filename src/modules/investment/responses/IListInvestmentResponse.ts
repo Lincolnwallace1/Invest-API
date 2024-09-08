@@ -1,4 +1,4 @@
-class IListInvestmentResponse {
+interface IListInvestmentResponse {
   meta: {
     total: number;
     limit: number;

@@ -10,13 +10,12 @@ class PaymentInvestmentService {
 
   public async execute(): Promise<void> {
     const investments = await this.investmentRepository.paymentList();
-    console.log(investments);
 
-    // for (const investment of investments) {
-    //   await this.investmentRepository.update(investment.id, {
-    //     expectedValue: investment.expectedValue * Math.pow(1 + 0.0052, 1),
-    //   });
-    // }
+    for (const investment of investments) {
+      await this.investmentRepository.update(investment.id, {
+        expectedValue: investment.expectedValue * Math.pow(1 + 0.0052, 1),
+      });
+    }
 
     console.log('Payment Investments');
   }

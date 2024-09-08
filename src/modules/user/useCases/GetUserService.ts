@@ -7,7 +7,7 @@ import UserRepository from '@modules/user/repository/UserRepository';
 import { IGetUserResponse } from '@modules/user/responses';
 
 interface IRequest {
-  id: number;
+  user: number;
 }
 
 class GetUserService {
@@ -16,10 +16,13 @@ class GetUserService {
     private userRepository: UserRepository,
   ) {}
 
-  public async execute({ id }: IRequest): Promise<IGetUserResponse> {
-    const user = await this.userRepository.get({ id, enabled: true });
+  public async execute({ user }: IRequest): Promise<IGetUserResponse> {
+    const userRecord = await this.userRepository.get({
+      id: user,
+      enabled: true,
+    });
 
-    if (!user) {
+    if (!userRecord) {
       throw new AppError({
         name: 'User Not Found',
         errorCode: 'user_not_found',
@@ -28,9 +31,9 @@ class GetUserService {
     }
 
     return {
-      id: user.id,
-      email: user.email,
-      fullname: user.fullname,
+      id: userRecord.id,
+      email: userRecord.email,
+      fullname: userRecord.fullname,
     };
   }
 }

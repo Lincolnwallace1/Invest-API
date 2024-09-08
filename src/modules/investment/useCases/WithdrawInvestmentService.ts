@@ -9,14 +9,14 @@ import HistoryRepository from '@modules/history/repository/HistoryRepository';
 
 import { WithdrawInvestmentSchema } from '@modules/investment/schemas';
 
-import { IWithdrawnInvestmentResponse } from '@modules/investment/responses';
+import { IWithdrawInvestmentResponse } from '@modules/investment/responses';
 
 interface IRequest {
   investment: number;
   data: Z.infer<typeof WithdrawInvestmentSchema>;
 }
 
-class WithdrawnInvestmentService {
+class WithdrawInvestmentService {
   constructor(
     @Inject(InvestmentRepository)
     private investmentRepository: InvestmentRepository,
@@ -27,7 +27,7 @@ class WithdrawnInvestmentService {
   public async execute({
     investment,
     data,
-  }: IRequest): Promise<IWithdrawnInvestmentResponse> {
+  }: IRequest): Promise<IWithdrawInvestmentResponse> {
     const investmentRecord = await this.investmentRepository.get({
       id: investment,
     });
@@ -103,4 +103,4 @@ class WithdrawnInvestmentService {
   }
 }
 
-export default WithdrawnInvestmentService;
+export default WithdrawInvestmentService;

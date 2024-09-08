@@ -106,10 +106,12 @@ class UserController {
     status: HttpStatus.UNAUTHORIZED,
   })
   @Get('/:user')
-  public async get(@Param('user') id: string): Promise<IGetUserResponse> {
-    const user = await this.getUserService.execute({ id: Number(id) });
+  public async get(@Param('user') user: string): Promise<IGetUserResponse> {
+    const userRecord = await this.getUserService.execute({
+      user: Number(user),
+    });
 
-    return instanceToInstance(user);
+    return instanceToInstance(userRecord);
   }
 
   @UseGuards(AuthGuard, UserGuard)
@@ -136,7 +138,7 @@ class UserController {
   })
   @Patch('/:user')
   public async update(
-    @Param('user') id: string,
+    @Param('user') user: string,
     @Body() data: IUpdateUser,
   ): Promise<void> {
     const dataParsed = await UpdateUserSchema.parseAsync(data).catch(
@@ -146,7 +148,7 @@ class UserController {
     );
 
     await this.updateUserService.execute({
-      user: Number(id),
+      user: Number(user),
       data: dataParsed,
     });
   }
@@ -167,8 +169,8 @@ class UserController {
     status: HttpStatus.UNAUTHORIZED,
   })
   @Delete('/:user')
-  public async delete(@Param('user') id: string): Promise<void> {
-    await this.deleteUserService.execute({ user: Number(id) });
+  public async delete(@Param('user') user: string): Promise<void> {
+    await this.deleteUserService.execute({ user: Number(user) });
   }
 }
 

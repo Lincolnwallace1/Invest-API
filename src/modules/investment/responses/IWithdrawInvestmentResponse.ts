@@ -1,4 +1,4 @@
-interface IWithdrawnInvestmentResponse {
+interface IWithdrawInvestmentResponse {
   id: number;
   date: Date;
   valueWithdrawn: number;
@@ -7,4 +7,4 @@ interface IWithdrawnInvestmentResponse {
   status: string;
 }
 
-export default IWithdrawnInvestmentResponse;
+export default IWithdrawInvestmentResponse;
