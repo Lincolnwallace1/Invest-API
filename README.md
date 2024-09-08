@@ -104,4 +104,4 @@ Isso irá iniciar a aplicação e disponibilizar a API para uso. A aplicação e
 
 Abaixo está disponível o diagrama relacional do banco de dados:
 
-![Modelo de banco de dados](assets/Diagrama%20do%20banco%20de%20dados.png)
+![Modelo de banco de dados](assets/Banco%20de%20dados.png)
