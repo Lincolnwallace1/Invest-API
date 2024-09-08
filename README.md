@@ -51,7 +51,38 @@ mkcert create-cert
 
 Esses comandos gerarão um certificado autoassinado para rodar a aplicação em ambiente de desenvolvimento com HTTPS, em seguida crie uma pasta chamada secrets e mova os arquivos gerados para ela.
 
-3. Executar Migrations
+3. Crie um arquivo `.env` na raiz do seu projeto com as seguintes variáveis de ambiente (igual ao ambiente local):
+
+```shell
+###################
+# General config
+# V.01
+###################
+
+API_PORT=8080
+API_HOST=http://localhost:8080
+
+###################
+# Database config
+# V.01
+###################
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=invest
+
+###################
+# Auth config
+# V.01
+###################
+
+AUTH_ACCESS_TOKEN_SECRET=mdasdaasmasp
+AUTH_ACCESS_TOKEN_EXP=1200
+```
+
+4. Executar Migrations
 
 Com o banco de dados configurado e os certificados gerados, o próximo passo é rodar as migrations do TypeORM para configurar o esquema do banco de dados. Execute o seguinte comando:
 
@@ -61,7 +92,7 @@ yarn migrate
 
 Esse comando aplicará todas as migrations necessárias ao banco de dados, criando as tabelas e relacionamentos conforme definido no projeto.
 
-4. Iniciar o Projeto
+5. Iniciar o Projeto
 
 Após configurar o banco de dados e rodar as migrations, você pode iniciar o projeto executando o seguinte comando:
 
